@@ -1,0 +1,13 @@
+MANIFEST.in
+elasticd/__init__.py
+elasticd/elasticd.py
+elasticd/schema.sql
+elasticd.egg-info/PKG-INFO
+elasticd.egg-info/SOURCES.txt
+elasticd.egg-info/dependency_links.txt
+elasticd.egg-info/requires.txt
+elasticd.egg-info/top_level.txt
+elasticd/static/style.css
+elasticd/templates/layout.html
+elasticd/templates/login.html
+elasticd/templates/show_settings.html

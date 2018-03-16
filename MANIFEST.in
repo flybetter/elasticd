@@ -1,0 +1,3 @@
+graft elasticd/static
+graft elasticd/templates
+include elasticd/schema.sql
