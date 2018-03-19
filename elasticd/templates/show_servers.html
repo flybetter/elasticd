@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block body %}
+    {% if session.logged_in %}
+        <form action="{{ url_for('servers_add') }}" method=post class=add-entry>
+            <dl>
+                <dt>server ip:
+                <dd><input type=text size=30 name=ip>
+                <dt>role:
+                <dd><input type=text size=30 name="role" value="root">
+                <dt>password:
+                <dd><input type="text" size="30" name="password">
+                <dd><input type=submit value=Share>
+            </dl>
+        </form>
+    {% endif %}
+    <ul class=entries>
+        {% for server in servers %}
+            <li>
+                <h2> {{ server.ip }}
+                    <button style="float: right"
+                            onclick="window.open('{{ url_for('servers_delete',server_id=server.id) }}','_self')">
+                        delete
+                    </button>
+                </h2>
+                {% else %}
+            <li><em>Unbelievable. No servers here so far</em>
+        {% endfor %}
+    </ul>
+{% endblock %}
+

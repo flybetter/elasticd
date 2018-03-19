@@ -9,6 +9,7 @@
 from flask import Flask, _app_ctx_stack, url_for, redirect, flash, render_template, request, session, abort
 import sqlite3
 import os
+import logstash
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -18,7 +19,8 @@ app.config.update(dict(
 	SECRET_KEY='development',
 	DEBUG=True,
 	username='admin',
-	password='default'
+	password='default',
+	logstash_path='/Users/wubingyu/PycharmProjects/Projects/2.7.11/elasticd/first-pipeline.conf'
 ))
 
 app.config.from_envvar('FLASK_ENV', silent=True)
@@ -65,11 +67,6 @@ def index():
 	return render_template('show_settings.html', settings=settings)
 
 
-@app.route('/something')
-def something():
-	return 'hello world'
-
-
 @app.route('/login', methods=['POST', 'GET'])
 def login():
 	error = None
@@ -81,12 +78,12 @@ def login():
 		else:
 			session['logged_in'] = True
 			flash('You were logged in!')
-			return redirect(url_for('show_settings'))
+			return redirect(url_for('settings_list'))
 	return render_template('login.html', error=error)
 
 
 @app.route('/settings/list')
-def show_settings():
+def settings_list():
 	settings = query_db('SELECT id,title,content FROM settings ORDER BY id DESC ')
 	return render_template('show_settings.html', settings=settings)
 
@@ -100,14 +97,14 @@ def setting_delete(setting_id):
 	db.execute("delete from settings where id =" + str(setting_id))
 	db.commit()
 	flash("You already delete the setting!")
-	return redirect(url_for('show_settings'))
+	return redirect(url_for('settings_list'))
 
 
 @app.route('/logout')
 def logout():
 	session.pop('logged_in', None)
 	flash('You were logged out!')
-	return redirect(url_for('show_settings'))
+	return redirect(url_for('settings_list'))
 
 
 @app.route('/setting/add', methods=['POST'])
@@ -117,7 +114,46 @@ def setting_add():
 	db = get_db()
 	db.execute('INSERT INTO settings (title,content)VALUES (?,?)', [request.form['title'], request.form['content']])
 	db.commit()
-	return redirect(url_for('show_settings'))
+	return redirect(url_for('settings_list'))
+
+
+@app.route('/servers/list')
+def servers_list():
+	servers = query_db('select * from servers order by id DESC ')
+	return render_template('show_servers.html', servers=servers)
+
+
+@app.route('/servers/add', methods=['POST'])
+def servers_add():
+	if not request.form['ip']:
+		error = 'please input the server ip'
+	elif not session.get('logged_in'):
+		error = 'please log in first!'
+	else:
+		db = get_db()
+		db.execute('INSERT INTO servers(ip,role,password) VALUES (?,?,?)',
+				   [request.form['ip'], request.form['role'], request.form['password']])
+		db.commit()
+		return redirect(url_for('servers_list'))
+	return redirect(url_for('login'), error=error)
+
+
+@app.route('/servers/delete/<int:server_id>')
+def servers_delete(server_id):
+	if not session.get('logged_in'):
+		error = 'please log in first'
+		return render_template('login.html', error=error)
+	db = get_db()
+	db.execute('delete FROM servers where id =' + str(server_id))
+	db.commit()
+	flash('You already delete the server')
+	return redirect(url_for('servers_list'))
+
+
+@app.cli.command('initlogtash')
+def init_logstash():
+	logstash.open_settings()
+	print "initialized the logstash setting"
 
 
 if __name__ == '__main__':

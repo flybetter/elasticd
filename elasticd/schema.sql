@@ -1,6 +1,17 @@
-DROP TABLE  if EXISTS settings;
-create table settings(
-  id INTEGER PRIMARY KEY autoincrement,
-  title text not NULL ,
-  content text not NULL
-)
+DROP TABLE IF EXISTS settings;
+CREATE TABLE settings (
+  id      INTEGER PRIMARY KEY AUTOINCREMENT,
+  title   TEXT NOT NULL,
+  content TEXT NOT NULL
+);
+
+
+DROP TABLE IF EXISTS servers;
+CREATE TABLE servers (
+  id       INTEGER PRIMARY KEY AUTOINCREMENT,
+  ip       TEXT NOT NULL,
+  role     TEXT NOT NULL,
+  password TEXT NOT NULL
+);
+
+

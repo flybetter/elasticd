@@ -7,3 +7,7 @@
 @create_time= 2018/3/15 上午11:16
 """
 from .elasticd import app
+from .import logstash
+from .import autodeploy
+
+

@@ -4,7 +4,8 @@
 <div class=page>
     <h1>Elasticsearch Setting</h1>
     <div class=metanav>
-        <a href="{{ url_for('something') }}">xxx</a>
+        <a href="{{ url_for('settings_list') }}">settings</a>
+        <a href="{{ url_for('servers_list') }}">servers</a>
         {% if not session.logged_in %}
             <a class="log" href="{{ url_for('login') }}">log in</a>
         {% else %}
